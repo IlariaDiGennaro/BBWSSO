@@ -69,6 +69,8 @@ public class AppController {
     		return "appLogin";
     	}
     	
+    	// TODO send genesis block to APPi
+    	
     	Cookie loginCookie = new Cookie(appProperties.getLoginCookie(), user.getUsername());
     	Calendar now = GregorianCalendar.getInstance();
     	now.setTime(new Date());
