@@ -10,6 +10,8 @@ public class AppProperties {
 	private  String loginCookie;
 	@Value("${day.expiration.cookie}")
 	private String dayExpirationCookie;
+	@Value("${sha.algorithm}")
+	private String shaAlgorithm;
 
 	public String getLoginCookie() {
 		return loginCookie;
@@ -27,6 +29,12 @@ public class AppProperties {
 		this.dayExpirationCookie = dayExpirationCookie;
 	}
 
-	
+	public String getShaAlgorithm() {
+		return shaAlgorithm;
+	}
+
+	public void setShaAlgorithm(String shaAlgorithm) {
+		this.shaAlgorithm = shaAlgorithm;
+	}
 	
 }
