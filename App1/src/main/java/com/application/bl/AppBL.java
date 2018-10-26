@@ -7,7 +7,7 @@ public class AppBL {
 	public boolean userLogin(User user) {
 		HeaderDTO header = new HeaderDTO();
 		header.setPrevHash(null);
-		
+		// TODO autowired securityutils and hash data and autowired appbl in controller
 		return false;
 	}
 }

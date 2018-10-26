@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -25,6 +27,8 @@ import com.application.model.validator.UserValidator;
 @Controller
 public class AppController {
 	
+	private static Logger logger = LogManager.getLogger();
+	
 	@Autowired
 	AppProperties appProperties;
 	
@@ -38,7 +42,7 @@ public class AppController {
 
     @RequestMapping(value="/home")
     public String home(HttpServletRequest request, HttpServletResponse response,Map<String, Object> model) {
-        
+            	
     	// check if user is logged
     	Cookie[] cookies = request.getCookies();
     	boolean loginCookieFound = false;

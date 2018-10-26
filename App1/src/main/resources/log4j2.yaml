@@ -1,0 +1,30 @@
+Configuration:
+ name: Default
+ Properties:
+  Property:
+   name: log-path
+   value: "C:\\Users\\ilari\\Documents\\TESI_LOG\\App1"
+ Appenders:
+  Console:
+   name: Console_Appender
+   target: SYSTEM_OUT
+   PatternLayout:
+    pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+  
+  RollingFile:
+   name: RollingFile_Appender
+   fileName: ${log-path}/spring-boot.log
+   filePattern: "C:\\Users\\ilari\\Documents\\TESI_LOG\\App1\\archive\\spring-boot.log.%d{yyyy-MM-dd-hh-mm}.gz"
+   PatternLayout:
+    pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+   Policies:
+   TimeBasedTriggeringPolicy:
+    interval: 1
+    modulate: true
+
+ Loggers:
+  Root:
+   level: info
+   AppenderRef:
+    - ref: Console_Appender
+    - ref: RollingFile_Appender

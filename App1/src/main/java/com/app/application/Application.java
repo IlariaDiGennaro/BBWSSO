@@ -8,7 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 @SpringBootApplication
-@ComponentScan({"com.app.controller","com.app.properties","com.application.model.validator"})
+@ComponentScan({"com.app.controller","com.app.properties","com.application.model.validator",
+	"com.application.security"})
 public class Application {
 	
 	@Bean
