@@ -1,16 +1,31 @@
 package com.application.security;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Security;
+import java.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMEncryptedKeyPair;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -18,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.app.properties.AppProperties;
+import com.application.utilities.AppUtils;
 
 @Component
 public class SecurityUtils {
@@ -26,6 +42,9 @@ public class SecurityUtils {
 	
 	@Autowired
 	AppProperties appProperties;
+	
+	@Autowired
+	AppUtils appUtils;
 	
 	public String sha256Hash(String stringToHash) throws Exception {
 		String hashedString = null;
@@ -41,21 +60,54 @@ public class SecurityUtils {
 		return hashedString;
 	}
 	
-	private PrivateKey getPrivateKey(String fullPathFile) {
+	private PrivateKey getPrivateKey(String fullPathFile) throws Exception {
 		PrivateKey privateKey = null;
 		try {
 			// TODO
+			Security.addProvider(new BouncyCastleProvider());
 			File privateKeyFile = new File(fullPathFile);
-			PemReader pemReader = new PemReader(new FileReader(privateKeyFile));
-			PemObject pemObject = pemReader.readPemObject();
-			// TODO add this in pom bcprov-jdk15on, bcmail-jdk15on and bcpkix-jdk15on
+			PEMParser pemParser = new PEMParser(new InputStreamReader(new FileInputStream(privateKeyFile)));
+			PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
+			JcaPEMKeyConverter pemConverter = new JcaPEMKeyConverter().setProvider(appProperties.getProviderName());
+			privateKey = pemConverter.getPrivateKey(pemKeyPair.getPrivateKeyInfo());
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
+			throw new Exception(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
+			throw new Exception(e);
 		}
 		return privateKey;
+	}
+	
+	public String encryptObject(Object object) throws Exception {
+		String encryptedObject = null;
+		try {
+			PrivateKey privateKey = getPrivateKey(appProperties.getEncryptionKeyFullPath());
+			Cipher encryptCipher = Cipher.getInstance(appProperties.getRsaAlgorithm());
+			encryptCipher.init(Cipher.ENCRYPT_MODE, privateKey);
+			byte [] encryptedBytes = encryptCipher.doFinal(appUtils.convertObjectToBytes(object));
+			encryptedObject = Base64.getEncoder().encodeToString(encryptedBytes);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (NoSuchPaddingException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (InvalidKeyException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (IllegalBlockSizeException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (BadPaddingException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (Exception e) {
+			logger.error(e);
+			throw new Exception(e);
+		}
+		
+		return encryptedObject;
 	}
 }

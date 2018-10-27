@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.app.properties.AppProperties;
 import com.application.dto.BlockDTO;
 import com.application.dto.BodyDTO;
 import com.application.dto.HeaderDTO;
@@ -19,6 +20,9 @@ public class AppBL {
 	
 	@Autowired
 	SecurityUtils securityUtils;
+	
+	@Autowired
+	AppProperties appProperties;
 	
 	private static Logger logger = LogManager.getLogger();
 	
@@ -42,6 +46,9 @@ public class AppBL {
 			BlockDTO genesisBlock = new BlockDTO();
 			genesisBlock.setHeader(header);
 			genesisBlock.setBody(body);
+			
+			securityUtils.encryptObject(genesisBlock.getBody());
+			// TODO decrypt object
 			
 			return true; // TODO
 			

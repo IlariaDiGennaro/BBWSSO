@@ -9,7 +9,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 
 @SpringBootApplication
 @ComponentScan({"com.app.controller","com.app.properties","com.application.model.validator",
-	"com.application.security","com.application.bl"})
+	"com.application.security","com.application.bl","com.application.utilities"})
 public class Application {
 	
 	@Bean

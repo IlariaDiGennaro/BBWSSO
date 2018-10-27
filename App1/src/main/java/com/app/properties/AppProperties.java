@@ -17,6 +17,12 @@ public class AppProperties {
 	
 	@Value("${encryption.key.full.path}")
 	private String encryptionKeyFullPath;
+	
+	@Value("${provider.name}")
+	private String providerName;
+	
+	@Value("${rsa.algorithm}")
+	private String rsaAlgorithm;
 
 	public String getLoginCookie() {
 		return loginCookie;
@@ -49,5 +55,22 @@ public class AppProperties {
 	public void setEncryptionKeyFullPath(String encryptionKeyFullPath) {
 		this.encryptionKeyFullPath = encryptionKeyFullPath;
 	}
+
+	public String getProviderName() {
+		return providerName;
+	}
+
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
+
+	public String getRsaAlgorithm() {
+		return rsaAlgorithm;
+	}
+
+	public void setRsaAlgorithm(String rsaAlgorithm) {
+		this.rsaAlgorithm = rsaAlgorithm;
+	}
+
 	
 }
