@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.app.properties.AppProperties;
+import com.application.bl.AppBL;
 import com.application.model.User;
 import com.application.model.validator.UserValidator;
 
@@ -38,7 +39,11 @@ public class AppController {
 	@InitBinder("user")
 	public void initBinder(WebDataBinder binder) {
 		binder.addValidators(userValidator);
-	} 
+	}
+	
+	@Autowired
+	AppBL appBL;
+	
 
     @RequestMapping(value="/home")
     public String home(HttpServletRequest request, HttpServletResponse response,Map<String, Object> model) {
@@ -67,7 +72,7 @@ public class AppController {
     @SuppressWarnings("static-access")
 	@RequestMapping(value="/login")
     public String login(@Valid @ModelAttribute("user") User user, Errors result, HttpServletRequest request, HttpServletResponse response,Map<String, Object> model) {
-  
+    	try {
     	if(result.hasErrors()) {
     		model.put("user", user);
     		return "appLogin";
@@ -75,17 +80,30 @@ public class AppController {
     	
     	// TODO send genesis block to APPi
     	
-    	Cookie loginCookie = new Cookie(appProperties.getLoginCookie(), user.getUsername());
-    	Calendar now = GregorianCalendar.getInstance();
-    	now.setTime(new Date());
-    	Calendar expirationDate = GregorianCalendar.getInstance();
-    	expirationDate.setTime(new Date());
-    	expirationDate.add(now.DAY_OF_MONTH, Integer.parseInt(appProperties.getDayExpirationCookie()));
-    	long start = now.getTimeInMillis();
-    	long end = expirationDate.getTimeInMillis();
-    	loginCookie.setMaxAge((int) ((end-start)/1000));
-    	response.addCookie(loginCookie);
-    	return "appHome";
+			if(appBL.userLogin(user)) {
+
+				Cookie loginCookie = new Cookie(appProperties.getLoginCookie(), user.getUsername());
+				Calendar now = GregorianCalendar.getInstance();
+				now.setTime(new Date());
+				Calendar expirationDate = GregorianCalendar.getInstance();
+				expirationDate.setTime(new Date());
+				expirationDate.add(now.DAY_OF_MONTH, Integer.parseInt(appProperties.getDayExpirationCookie()));
+				long start = now.getTimeInMillis();
+				long end = expirationDate.getTimeInMillis();
+				loginCookie.setMaxAge((int) ((end-start)/1000));
+				response.addCookie(loginCookie);
+				return "appHome";
+			}
+			else
+				return "appLogin";
+		} catch (NumberFormatException e) {
+			logger.error(e);
+			return "errorPage";
+		} catch (Exception e) {
+			logger.error(e);
+			return "errorPage";
+		}
+    	
     	
     }
 

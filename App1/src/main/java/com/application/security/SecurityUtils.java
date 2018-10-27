@@ -1,12 +1,19 @@
 package com.application.security;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,5 +39,23 @@ public class SecurityUtils {
 			throw new Exception(e);
 		}
 		return hashedString;
+	}
+	
+	private PrivateKey getPrivateKey(String fullPathFile) {
+		PrivateKey privateKey = null;
+		try {
+			// TODO
+			File privateKeyFile = new File(fullPathFile);
+			PemReader pemReader = new PemReader(new FileReader(privateKeyFile));
+			PemObject pemObject = pemReader.readPemObject();
+			// TODO add this in pom bcprov-jdk15on, bcmail-jdk15on and bcpkix-jdk15on
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return privateKey;
 	}
 }
