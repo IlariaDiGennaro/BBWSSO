@@ -47,9 +47,9 @@ public class AppBL {
 			genesisBlock.setHeader(header);
 			genesisBlock.setBody(body);
 			
-			securityUtils.encryptObject(genesisBlock.getBody());
+			String encryptedObject = securityUtils.encryptObject(genesisBlock.getBody());
 			// TODO decrypt object
-			
+			BodyDTO decryptedBody = (BodyDTO) securityUtils.decryptObject(encryptedObject);
 			return true; // TODO
 			
 		} catch (Exception e) {

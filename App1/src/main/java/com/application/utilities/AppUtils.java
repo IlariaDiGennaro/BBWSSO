@@ -1,7 +1,9 @@
 package com.application.utilities;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,5 +28,18 @@ public class AppUtils {
 			throw new Exception(e);
 		}
 		return objectBytes;
+	}
+	
+	public Object convertBytesToObject(byte [] bytes) throws Exception {
+		Object object = null;
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		    ObjectInputStream ois = new ObjectInputStream(bais);
+		    object = ois.readObject();
+		} catch (IOException e) {
+			logger.error(e);
+			throw new Exception(e);
+		}
+		return object;
 	}
 }

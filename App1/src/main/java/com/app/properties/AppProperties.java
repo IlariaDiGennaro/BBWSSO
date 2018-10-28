@@ -23,6 +23,18 @@ public class AppProperties {
 	
 	@Value("${rsa.algorithm}")
 	private String rsaAlgorithm;
+	
+	@Value("${x509.certificate.full.path}")
+	private String x509CertificateFullPath;
+	
+	@Value("${x509.certificate}")
+	private String x509Certificate;
+	
+	@Value("${this.app.identifier}")
+	private String thisAppIdentifier;
+	
+	@Value("${other.app.identifiers}")
+	private String otherAppIdentifiers;
 
 	public String getLoginCookie() {
 		return loginCookie;
@@ -72,5 +84,38 @@ public class AppProperties {
 		this.rsaAlgorithm = rsaAlgorithm;
 	}
 
+	public String getX509CertificateFullPath() {
+		return x509CertificateFullPath;
+	}
+
+	public void setX509CertificateFullPath(String x509CertificateFullPath) {
+		this.x509CertificateFullPath = x509CertificateFullPath;
+	}
+
+	public String getX509Certificate() {
+		return x509Certificate;
+	}
+
+	public void setX509Certificate(String x509Certificate) {
+		this.x509Certificate = x509Certificate;
+	}
+
+	public String getThisAppIdentifier() {
+		return thisAppIdentifier;
+	}
+
+	public void setThisAppIdentifier(String thisAppIdentifier) {
+		this.thisAppIdentifier = thisAppIdentifier;
+	}
+
+	public String getOtherAppIdentifiers() {
+		return otherAppIdentifiers;
+	}
+
+	public void setOtherAppIdentifiers(String otherAppIdentifiers) {
+		this.otherAppIdentifiers = otherAppIdentifiers;
+	}
+	
+	
 	
 }

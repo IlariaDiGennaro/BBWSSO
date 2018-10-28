@@ -8,10 +8,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Security;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -109,5 +115,68 @@ public class SecurityUtils {
 		}
 		
 		return encryptedObject;
+	}
+	
+	private PublicKey getPublicKey(String fullPathFile) throws Exception {
+		PublicKey publicKey = null;
+//		try {
+//		File certificateFile = new File(fullPathFile);
+//		FileReader fileReader = new FileReader(certificateFile);
+//		PemReader pemReader = new PemReader(fileReader);
+//		X509EncodedKeySpec x509certificate = new X509EncodedKeySpec(pemReader.readPemObject().getContent());
+//		KeyFactory keyFactory = KeyFactory.getInstance(appProperties.getRsaAlgorithm());
+//		publicKey = keyFactory.generatePublic(x509certificate);
+//		} catch (FileNotFoundException e) {
+//			logger.error(e);
+//			throw new Exception(e);
+//		} catch (IOException e) {
+//			logger.error(e);
+//			throw new Exception(e);
+//		} catch (NoSuchAlgorithmException e) {
+//			logger.error(e);
+//			throw new Exception(e);
+//		} catch (InvalidKeySpecException e) {
+//			logger.error(e);
+//			throw new Exception(e);
+//		}
+		
+		File certificateFile = new File(fullPathFile);
+		FileInputStream fis = new FileInputStream(certificateFile);
+		CertificateFactory certificateFactory = CertificateFactory.getInstance(appProperties.getX509Certificate());
+		X509Certificate x509certificate = (X509Certificate) certificateFactory.generateCertificate(fis);
+		publicKey = x509certificate.getPublicKey();
+		return publicKey;
+	}
+	
+	public Object decryptObject(String encryptedObject) throws Exception {
+		Object decryptedObject = null;
+		try {
+			PublicKey publicKey = getPublicKey(appProperties.getX509CertificateFullPath());
+			Cipher decryptCipher = Cipher.getInstance(appProperties.getRsaAlgorithm());
+			decryptCipher.init(Cipher.DECRYPT_MODE, publicKey);
+			byte [] encryptedBytes = Base64.getDecoder().decode(encryptedObject);
+			byte [] decryptedBytes = decryptCipher.doFinal(encryptedBytes);
+			decryptedObject = appUtils.convertBytesToObject(decryptedBytes);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (NoSuchPaddingException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (InvalidKeyException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (IllegalBlockSizeException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (BadPaddingException e) {
+			logger.error(e);
+			throw new Exception(e);
+		} catch (Exception e) {
+			logger.error(e);
+			throw new Exception(e);
+		}
+		
+		return decryptedObject;
 	}
 }
