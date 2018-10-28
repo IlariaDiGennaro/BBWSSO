@@ -35,6 +35,12 @@ public class AppProperties {
 	
 	@Value("${other.app.identifiers}")
 	private String otherAppIdentifiers;
+	
+	@Value("${aes.algorithm}")
+	private String aesAlgorithm;
+	
+	@Value("${aes.key.lenght}")
+	private String aesKeyLenght;
 
 	public String getLoginCookie() {
 		return loginCookie;
@@ -115,7 +121,20 @@ public class AppProperties {
 	public void setOtherAppIdentifiers(String otherAppIdentifiers) {
 		this.otherAppIdentifiers = otherAppIdentifiers;
 	}
-	
-	
-	
+
+	public String getAesAlgorithm() {
+		return aesAlgorithm;
+	}
+
+	public void setAesAlgorithm(String aesAlgorithm) {
+		this.aesAlgorithm = aesAlgorithm;
+	}
+
+	public String getAesKeyLenght() {
+		return aesKeyLenght;
+	}
+
+	public void setAesKeyLenght(String aesKeyLenght) {
+		this.aesKeyLenght = aesKeyLenght;
+	}
 }
