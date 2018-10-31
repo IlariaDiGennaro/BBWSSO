@@ -105,6 +105,28 @@
 			
 		</dependency>
 		<!-- LOG4J2 -->
+		
+		<!-- Spring Data JPA -->
+		 <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+		<!-- Spring Data JPA -->
+		
+		<!-- MySQL -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+</dependency>
+		
+		<!-- MySQL -->
 
 	</dependencies>
 
