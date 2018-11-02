@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jms.annotation.EnableJms;
 
 @SpringBootApplication
 @ComponentScan({"com.app.controller","com.app.properties","com.application.model.validator",
@@ -18,6 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("com.app.db")
 @EntityScan({"com.app.db"})
 //@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
+@EnableJms
 public class Application {
 	
 	@Bean

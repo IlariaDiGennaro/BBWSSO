@@ -1,19 +1,19 @@
 package com.application.bl;
 
-import java.io.InputStreamReader;
 import java.security.Key;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
+import javax.jms.Message;
+
+import org.apache.activemq.util.ByteSequence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.stereotype.Component;
 
-import com.app.db.Application;
 import com.app.db.ApplicationRepository;
 import com.app.properties.AppProperties;
 import com.application.dto.BlockDTO;
@@ -22,6 +22,7 @@ import com.application.dto.HeaderDTO;
 import com.application.dto.MessageDTO;
 import com.application.model.User;
 import com.application.security.SecurityUtils;
+import com.google.gson.Gson;
 
 @Component
 public class AppBL {
@@ -34,6 +35,9 @@ public class AppBL {
 	
 	@Autowired
 	ApplicationRepository applicationRepository;
+	
+	@Autowired
+	JmsTemplate jmsTemplate;
 	
 	private static Logger logger = LogManager.getLogger();
 	
@@ -88,6 +92,15 @@ public class AppBL {
 //			X509Certificate x509certificate = (X509Certificate) certificateFactory.generateCertificate(listApplication.get(0).getCertificate().getBinaryStream());
 //			publicKey = x509certificate.getPublicKey();
 
+			Gson gson = new Gson();
+			String jsonMessage = gson.toJson(message);
+			jmsTemplate.convertAndSend("app1inputQueue", jsonMessage);
+			
+//			Message messageReceived = jmsTemplate.receive("app1outputQueue");
+//			
+//			messageReceived.getBody(java.io.Serializable.class);
+			com.app.dto.MessageDTO received = (com.app.dto.MessageDTO) jmsTemplate.receiveAndConvert("app1outputQueue");
+			received.toString();
 			return true; // TODO
 			
 		} catch (Exception e) {
