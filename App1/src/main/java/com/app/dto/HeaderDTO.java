@@ -1,4 +1,4 @@
-package com.application.dto;
+package com.app.dto;
 
 import java.io.Serializable;
 import java.util.Date;

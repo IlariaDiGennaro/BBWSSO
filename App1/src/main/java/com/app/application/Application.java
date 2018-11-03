@@ -1,10 +1,8 @@
 package com.app.application;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,8 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
 
 @SpringBootApplication
-@ComponentScan({"com.app.controller","com.app.properties","com.application.model.validator",
-	"com.application.security","com.application.bl","com.application.utilities"})
+@ComponentScan({"com.app.controller","com.app.properties","com.app.model.validator",
+	"com.app.security","com.app.bl","com.app.utilities"})
 //@EnableJpaRepositories(basePackageClasses= {ApplicationRepository.class})
 @EnableJpaRepositories("com.app.db")
 @EntityScan({"com.app.db"})

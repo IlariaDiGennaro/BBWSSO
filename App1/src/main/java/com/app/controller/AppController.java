@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.app.bl.AppBL;
+import com.app.model.User;
+import com.app.model.validator.UserValidator;
 import com.app.properties.AppProperties;
-import com.application.bl.AppBL;
-import com.application.model.User;
-import com.application.model.validator.UserValidator;
 
 @Controller
 public class AppController {

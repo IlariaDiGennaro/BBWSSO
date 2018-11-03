@@ -1,10 +1,10 @@
-package com.application.model.validator;
+package com.app.model.validator;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import com.application.model.User;
+import com.app.model.User;
 
 @Component
 public class UserValidator implements Validator{

@@ -13,6 +13,7 @@
         <property name="brokerURL" value="${broker.url}"/>
         <property name="userName" value="${broker.username}"/>
         <property name="password" value="${broker.password}"/>
+        <property name="trustAllPackages" value="true"/>
     </bean>
     <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq">
         <property name="configuration">
@@ -21,9 +22,7 @@
             </bean>
         </property>
     </bean>
-    
-    <bean id="blockManager" class="com.app.BlockManager"></bean>
-    
+    <bean class="com.app.bl.BlockManager" id="blockManager"/>
     <camelContext id="_camelContext" xmlns="http://camel.apache.org/schema/spring">
         <route id="_app1Route" streamCache="true">
             <from id="_app1iq" uri="activemq:app1inputQueue"/>
@@ -31,15 +30,15 @@
             <log id="_log2" message="header - ${headers}"/>
             <log id="_log3" message="body - ${body}"/>
             <log id="_log4" message="to app1oq"/>
-            <bean ref="blockManager" method="manageBlock"></bean>
+            <bean id="_bean1" method="manageBlock" ref="blockManager"/>
             <choice id="_choice1">
                 <when id="_when1">
-                    <simple>${body.sender} == 'App1'</simple>
+                    <simple>${body.receiver} == 'App1'</simple>
                     <log id="_log5" message="when App1"/>
                     <to id="_app1oq" uri="activemq:app1outputQueue"/>
                 </when>
                 <otherwise id="_otherwise1">
-                    <log id="_log6" message="otherwiser"/>
+                    <log id="_log6" message="otherwise"/>
                     <to id="_app2oq" uri="activemq:app2outputQueue"/>
                 </otherwise>
             </choice>

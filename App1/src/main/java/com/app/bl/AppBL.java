@@ -1,28 +1,24 @@
-package com.application.bl;
+package com.app.bl;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.Random;
 
-import javax.jms.Message;
-
-import org.apache.activemq.util.ByteSequence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.stereotype.Component;
 
 import com.app.db.ApplicationRepository;
+import com.app.dto.BlockDTO;
+import com.app.dto.BodyDTO;
+import com.app.dto.HeaderDTO;
+import com.app.dto.MessageDTO;
+import com.app.dto.ResponseDTO;
+import com.app.model.User;
 import com.app.properties.AppProperties;
-import com.application.dto.BlockDTO;
-import com.application.dto.BodyDTO;
-import com.application.dto.HeaderDTO;
-import com.application.dto.MessageDTO;
-import com.application.model.User;
-import com.application.security.SecurityUtils;
-import com.google.gson.Gson;
+import com.app.security.SecurityUtils;
 
 @Component
 public class AppBL {
@@ -80,9 +76,9 @@ public class AppBL {
 			message.setEncryptedSimmetricKey(encryptedSimmetricKey);
 
 			// decryption
-			Key publicKey = securityUtils.getPublicKey(appProperties.getX509CertificateFullPath());
-			Key dSimmetricKey = (Key) securityUtils.decryptObject(message.getEncryptedSimmetricKey(), appProperties.getRsaAlgorithm(), publicKey);
-			BlockDTO dGenesisBloc = (BlockDTO) securityUtils.decryptObject(message.getEncryptedBlock(), appProperties.getAesAlgorithm(), dSimmetricKey);
+//			Key publicKey = securityUtils.getPublicKey(appProperties.getX509CertificateFullPath());
+//			Key dSimmetricKey = (Key) securityUtils.decryptObject(message.getEncryptedSimmetricKey(), appProperties.getRsaAlgorithm(), publicKey);
+//			BlockDTO dGenesisBloc = (BlockDTO) securityUtils.decryptObject(message.getEncryptedBlock(), appProperties.getAesAlgorithm(), dSimmetricKey);
 			
 			// reading from application table with spring data
 //			List<Application> listApplication = applicationRepository.findByAppID("App1");
@@ -92,15 +88,15 @@ public class AppBL {
 //			X509Certificate x509certificate = (X509Certificate) certificateFactory.generateCertificate(listApplication.get(0).getCertificate().getBinaryStream());
 //			publicKey = x509certificate.getPublicKey();
 
-			Gson gson = new Gson();
-			String jsonMessage = gson.toJson(message);
-			jmsTemplate.convertAndSend("app1inputQueue", jsonMessage);
+			
+			
+			jmsTemplate.convertAndSend("app1inputQueue", message);
 			
 //			Message messageReceived = jmsTemplate.receive("app1outputQueue");
 //			
 //			messageReceived.getBody(java.io.Serializable.class);
-			com.app.dto.MessageDTO received = (com.app.dto.MessageDTO) jmsTemplate.receiveAndConvert("app1outputQueue");
-			received.toString();
+			ResponseDTO response = (ResponseDTO) jmsTemplate.receiveAndConvert("app1outputQueue");
+			response.toString();
 			return true; // TODO
 			
 		} catch (Exception e) {
