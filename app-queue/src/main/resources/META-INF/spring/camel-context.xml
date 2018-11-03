@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Configures the Camel Context-->
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://camel.apache.org/schema/spring          http://camel.apache.org/schema/spring/camel-spring.xsd         http://www.springframework.org/schema/beans          http://www.springframework.org/schema/beans/spring-beans.xsd         http://www.springframework.org/schema/context          http://www.springframework.org/schema/context/spring-context.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="              http://camel.apache.org/schema/spring               http://camel.apache.org/schema/spring/camel-spring.xsd              http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd              http://www.springframework.org/schema/context              http://www.springframework.org/schema/context/spring-context.xsd">
     <!-- 
          Lets connect the Camel ActiveMQ component to the broker.
     -->
@@ -22,15 +22,37 @@
             </bean>
         </property>
     </bean>
-    <bean class="com.app.bl.BlockManager" id="blockManager"/>
+    <bean class="com.app.bl.BlockManager" id="blockManager">
+        <property name="applicationDAO" ref="applicationDAO"/>
+        <property name="mongoClient" ref="mongoClient"></property>
+    </bean>
+    <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource">
+        <property name="driverClassName" value="${bbwsso.driverClassName}"/>
+        <property name="url" value="${bbwsso.url}"/>
+        <property name="username" value="${bbwsso.username}"/>
+        <property name="password" value="${bbwsso.password}"/>
+    </bean>
+    <bean class="com.app.dao.ApplicationDAO" id="applicationDAO">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <bean id="mongoClientURI" class="com.mongodb.MongoClientURI">
+    	<constructor-arg name="uri" value="${provaMongo.connectionString}"></constructor-arg>
+    </bean>
+    
+    <bean id="mongoClient" class="com.mongodb.MongoClient">
+    	<constructor-arg name="uri" ref="mongoClientURI"></constructor-arg>
+    </bean>
+    
     <camelContext id="_camelContext" xmlns="http://camel.apache.org/schema/spring">
         <route id="_app1Route" streamCache="true">
             <from id="_app1iq" uri="activemq:app1inputQueue"/>
             <log id="_log1" message="from app1iq"/>
             <log id="_log2" message="header - ${headers}"/>
             <log id="_log3" message="body - ${body}"/>
+            <!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
             <log id="_log4" message="to app1oq"/>
-            <bean id="_bean1" method="manageBlock" ref="blockManager"/>
+            <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>
             <choice id="_choice1">
                 <when id="_when1">
                     <simple>${body.receiver} == 'App1'</simple>
