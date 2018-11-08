@@ -7,6 +7,8 @@ public class AppProperties {
 	private static String shaAlgorithm;
 	private static String mongodbPrefix;
 	private static String mongodbCollectionActual;
+	private static String dateFormat;
+	private static String mongodbCollectionArchive;
 	
 	public static String getX509Certificate() {
 		return x509Certificate;
@@ -48,6 +50,29 @@ public class AppProperties {
 		AppProperties.mongodbPrefix = mongodbPrefix;
 	}
 
+	public static String getMongodbCollectionActual() {
+		return mongodbCollectionActual;
+	}
+
+	public static void setMongodbCollectionActual(String mongodbCollectionActual) {
+		AppProperties.mongodbCollectionActual = mongodbCollectionActual;
+	}
+
+	public static String getDateFormat() {
+		return dateFormat;
+	}
+
+	public static void setDateFormat(String dateFormat) {
+		AppProperties.dateFormat = dateFormat;
+	}
+
+	public static String getMongodbCollectionArchive() {
+		return mongodbCollectionArchive;
+	}
+
+	public static void setMongodbCollectionArchive(String mongodbCollectionArchive) {
+		AppProperties.mongodbCollectionArchive = mongodbCollectionArchive;
+	}
 	
 	
 }

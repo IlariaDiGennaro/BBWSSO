@@ -9,15 +9,16 @@
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" id="bean-f97af12f-718f-45cb-96cc-d44b1b2c94c9">
         <property name="locations" value="file:${PROPERTIES}"/>
     </bean>
-    
-    <bean id="appProperties" class="com.app.properties.AppProperties">
-    	<property name="x509Certificate" value="${x509.certificate}"></property>
-    	<property name="rsaAlgorithm" value="${rsa.algorithm}"></property>
-    	<property name="aesAlgorithm" value="${aes.algorithm}"></property>
-    	<property name="shaAlgorithm" value="${sha.algorithm}"></property>
-    	<property name="mongodbPrefix" value="${mongodb.prefix}"></property>
+    <bean class="com.app.properties.AppProperties" id="appProperties">
+        <property name="x509Certificate" value="${x509.certificate}"/>
+        <property name="rsaAlgorithm" value="${rsa.algorithm}"/>
+        <property name="aesAlgorithm" value="${aes.algorithm}"/>
+        <property name="shaAlgorithm" value="${sha.algorithm}"/>
+        <property name="mongodbPrefix" value="${mongodb.prefix}"/>
+        <property name="dateFormat" value="${date.format}"/>
+        <property name="mongodbCollectionActual" value="${mongodb.collection.actual}"></property>
+        <property name="mongodbCollectionArchive" value="${mongodb.collection.archive}"/>
     </bean>
-    
     <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="activemq-connection-factory">
         <property name="brokerURL" value="${broker.url}"/>
         <property name="userName" value="${broker.username}"/>
@@ -34,7 +35,7 @@
     <bean class="com.app.bl.BlockManager" id="blockManager">
         <property name="applicationDAO" ref="applicationDAO"/>
         <property name="userDAO" ref="userDAO"/>
-        <property name="mongoClient" ref="mongoClient"/>
+        <property name="blockchainDAO" ref="blockchainDAO"/>
     </bean>
     <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource">
         <property name="driverClassName" value="${bbwsso.driverClassName}"/>
@@ -48,6 +49,9 @@
     <bean class="com.app.dao.UserDAO" id="userDAO">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+    <bean class="com.app.dao.BlockchainDAO" id="blockchainDAO">
+        <property name="mongoClient" ref="mongoClient"/>
+    </bean>
     <bean class="com.mongodb.MongoClientURI" id="mongoClientURI">
         <constructor-arg name="uri" value="${mongodb.url}"/>
     </bean>
@@ -57,9 +61,9 @@
     <camelContext id="_camelContext" xmlns="http://camel.apache.org/schema/spring">
         <route id="_app1Route" streamCache="true">
             <from id="_app1iq" uri="activemq:app1inputQueue"/>
+            <!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
             <log id="_log1" message="from app1iq"/>
             <log id="_log2" message="header - ${headers}"/>
-            <!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
             <log id="_log3" message="body - ${body}"/>
             <log id="_log4" message="to app1oq"/>
             <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>

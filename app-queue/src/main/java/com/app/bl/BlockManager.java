@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.app.dao.ApplicationDAO;
+import com.app.dao.BlockchainDAO;
 import com.app.dao.UserDAO;
 import com.app.dto.ApplicationDTO;
 import com.app.dto.BlockDTO;
@@ -40,16 +41,6 @@ public class BlockManager {
 		this.applicationDAO = applicationDAO;
 	}
 	
-	private MongoClient mongoClient;
-
-	public MongoClient getMongoClient() {
-		return mongoClient;
-	}
-
-	public void setMongoClient(MongoClient mongoClient) {
-		this.mongoClient = mongoClient;
-	}
-	
 	private UserDAO userDAO;
 
 	public UserDAO getUserDAO() {
@@ -58,6 +49,16 @@ public class BlockManager {
 
 	public void setUserDAO(UserDAO userDAO) {
 		this.userDAO = userDAO;
+	}
+	
+	private BlockchainDAO blockchainDAO;
+
+	public BlockchainDAO getBlockchainDAO() {
+		return blockchainDAO;
+	}
+
+	public void setBlockchainDAO(BlockchainDAO blockchainDAO) {
+		this.blockchainDAO = blockchainDAO;
 	}
 
 	public ResponseDTO manageBlock(Exchange exchange) {
@@ -106,14 +107,8 @@ public class BlockManager {
 			throw new Exception(exception);
 		}
 		
-		FindIterable<Document> documents = mongoClient.getDatabase("provaMongo").getCollection("provaCollection").find();
-		Iterator it = documents.iterator(); 
-	    
-	      while (it.hasNext()) {  
-	         Document d = (Document) it.next();
-	         d.getString("sender");
-	      }
 		// build response
+		responseToSend.setValidBlock(blockValidation(application, block,receivedMessage.getReceiver()));
 		responseToSend.setReceiver(receivedMessage.getSender());
 		responseToSend.setSender(receivedMessage.getReceiver());
 		// TODO responseToSend.setValidBlock(true);
@@ -125,7 +120,7 @@ public class BlockManager {
 		return responseToSend;
 	}
 	
-	private boolean blockValidation(ApplicationDTO application, BlockDTO block) throws Exception {
+	private boolean blockValidation(ApplicationDTO application, BlockDTO block, String receiver) throws Exception {
 		boolean validBlock = false;
 		// TODO 
 		String appID = application.getAppID();
@@ -136,10 +131,10 @@ public class BlockManager {
 			throw new Exception(exception);
 		}
 		
-		if(body.getAppID() == null || !appID.equals(body.getAppID())) {
-			String exception = "Block's AppID ["+body.getAppID()+"] <> Message's sender ["+appID+"]";
-			throw new Exception(exception);
-		}
+//		if(body.getAppID() == null || !appID.equals(body.getAppID())) {
+//			String exception = "Block's AppID ["+body.getAppID()+"] <> Message's sender ["+appID+"]";
+//			throw new Exception(exception);
+//		}
 		
 		if(header.getPrevHash() == null || "".equals(header.getPrevHash())) {
 			// GENESIS BLOCK
@@ -155,11 +150,11 @@ public class BlockManager {
 				throw new Exception(exception);
 			}
 			// check if user can access application
-			boolean accessAllowed = accessAllowed(appID, user.getApps());
-			if(!accessAllowed) {
-				String exception = "User ".concat(username).concat(" cannot access Application ").concat(appID);
-				throw new Exception(exception);
-			}
+//			boolean accessAllowed = accessAllowed(String.valueOf(application.getId()), user.getApps());
+//			if(!accessAllowed) {
+//				String exception = "User ".concat(username).concat(" cannot access Application ").concat(appID);
+//				throw new Exception(exception);
+//			}
 			
 			// valid hash data
 			String calculatedDataHash = SecurityUtils.sha256Hash(user.getUsername().concat(user.getPassword()));
@@ -169,7 +164,11 @@ public class BlockManager {
 			}
 			
 			// check if exist a blockchain for user
+			// if exists invalidate and re-create
 			// TODO do blockchaindao and move mongoclient in blockchaindao
+			if(blockchainDAO.createUserBlockchain(block,receiver)) {
+				validBlock = true;
+			}
 			
 		}
 		return validBlock;
