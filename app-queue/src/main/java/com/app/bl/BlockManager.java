@@ -62,15 +62,46 @@ public class BlockManager {
 	}
 
 	public ResponseDTO manageBlock(Exchange exchange) {
-		ResponseDTO response = new ResponseDTO();
-		MessageDTO message = (MessageDTO) exchange.getIn().getBody();
+		ResponseDTO responseToSend = new ResponseDTO();
+		try {
+		MessageDTO receivedMessage = (MessageDTO) exchange.getIn().getBody();
 		//TODO manage Block
+		String sender = receivedMessage.getSender();
+		// read application public key from db
+		ApplicationDTO application = applicationDAO.readByAppId(sender);
+		if(application==null) {
+			String exception = "Application ".concat(sender).concat(" not found.");
+			throw new Exception(exception);
+		}
+		
+		PublicKey applicationPublicKey = SecurityUtils.getPublicKey(application.getCertificate().getBinaryStream());
+		if(applicationPublicKey == null) {
+			String exception = "Public key for Application ".concat(sender).concat(" not found.");
+			throw new Exception(exception);
+		}
+		
+		// decrypt simmetric key
+		Key simmetricKey = (Key) SecurityUtils.decryptObject(receivedMessage.getEncryptedSimmetricKey(), AppProperties.getRsaAlgorithm(), applicationPublicKey);
+		if(simmetricKey == null) {
+			String exception = "Simmetric key for block decryption not found.";
+			throw new Exception(exception);
+		}
+		
+		// decrypt block
+		BlockDTO block = (BlockDTO) SecurityUtils.decryptObject(receivedMessage.getEncryptedBlock(), AppProperties.getAesAlgorithm(), simmetricKey);
+		if(block == null) {
+			String exception = "Block not found.";
+			throw new Exception(exception);
+		}
 		
 		// build response
-		response.setReceiver(message.getSender());
-		response.setSender(message.getReceiver());
-		response.setValidBlock(true);
-		return response;
+		responseToSend.setReceiver(receivedMessage.getSender());
+		responseToSend.setSender(receivedMessage.getReceiver());
+		}catch(Exception exception) {
+			logger.error("manageBlockTEST", exception);
+			responseToSend.setValidBlock(false);
+		}
+		return responseToSend;
 	}
 	
 	public ResponseDTO manageBlockTEST(Exchange exchange) throws Exception {
