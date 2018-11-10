@@ -47,25 +47,38 @@ public class AppController {
 
     @RequestMapping(value="/home")
     public String home(HttpServletRequest request, HttpServletResponse response,Map<String, Object> model) {
-            	
-    	// check if user is logged
-    	Cookie[] cookies = request.getCookies();
-    	boolean loginCookieFound = false;
-    	if(cookies != null) {
-    		for (Cookie cookie : cookies) {
-				if(cookie.getName().equals(appProperties.getLoginCookie())) {
-					loginCookieFound = true;
-					break;
-				}
-			}
-    	}
-    	if(loginCookieFound)
-    		return "appHome";
-    	else {
-//    		Cookie loginCookie = new Cookie(appProperties.getLoginCookie(), "userName");
-//    		response.addCookie(loginCookie);
-    		model.put("user", new User());
-    		return "appLogin";
+    	try {   	
+    		// check if user is logged
+    		Cookie[] cookies = request.getCookies();
+    		boolean loginCookieFound = false;
+    		String loginCookieValue = null;
+    		if(cookies != null) {
+    			for (Cookie cookie : cookies) {
+    				if(cookie.getName().equals(appProperties.getLoginCookie())) {
+    					loginCookieFound = true;
+    					loginCookieValue = cookie.getValue();
+    					break;
+    				}
+    			}
+    		}
+    		if(loginCookieFound) {
+
+    			if(appBL.userAccess(loginCookieValue)) {
+    				return "appHome";
+    			}
+    			else {
+    				return "errorPage";
+    			}
+    		}
+    		else {
+    			//    		Cookie loginCookie = new Cookie(appProperties.getLoginCookie(), "userName");
+    			//    		response.addCookie(loginCookie);
+    			model.put("user", new User());
+    			return "appLogin";
+    		}
+    	} catch (Exception e) {
+    		logger.error(e);
+    		return "errorPage";
     	}
     }
     

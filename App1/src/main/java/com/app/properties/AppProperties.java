@@ -41,6 +41,12 @@ public class AppProperties {
 	
 	@Value("${aes.key.lenght}")
 	private String aesKeyLenght;
+	
+	@Value("${date.format}")
+	private String dateFormat;
+	
+	@Value("${date.format.hour}")
+	private String dateFormatHour;
 
 	public String getLoginCookie() {
 		return loginCookie;
@@ -136,5 +142,21 @@ public class AppProperties {
 
 	public void setAesKeyLenght(String aesKeyLenght) {
 		this.aesKeyLenght = aesKeyLenght;
+	}
+
+	public String getDateFormat() {
+		return dateFormat;
+	}
+
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
+
+	public String getDateFormatHour() {
+		return dateFormatHour;
+	}
+
+	public void setDateFormatHour(String dateFormatHour) {
+		this.dateFormatHour = dateFormatHour;
 	}
 }

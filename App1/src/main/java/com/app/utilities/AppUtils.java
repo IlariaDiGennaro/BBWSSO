@@ -5,13 +5,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.app.properties.AppProperties;
 
 @Component
 public class AppUtils {
+	
+	@Autowired
+	AppProperties appProperties;
 	
 	private static Logger logger = LogManager.getLogger();
 	
@@ -41,5 +49,10 @@ public class AppUtils {
 			throw new Exception(e);
 		}
 		return object;
+	}
+	
+	public String convertDateToString(Date date,String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(date);
 	}
 }

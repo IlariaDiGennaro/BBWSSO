@@ -40,6 +40,7 @@ public class BlockchainDAO {
 		Document existingBlockchain = actualCollection.find(bsonFilter).first();
 		if(existingBlockchain != null) {
 			MongoCollection<Document> archiveCollection = mdb.getCollection(AppProperties.getMongodbCollectionArchive());
+			archiveCollection.deleteOne(bsonFilter);
 			archiveCollection.insertOne(existingBlockchain);
 			actualCollection.deleteOne(bsonFilter);
 		}

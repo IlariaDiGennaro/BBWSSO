@@ -95,10 +95,11 @@ public class BlockManager {
 		}
 		
 		// build response
+		responseToSend.setValidBlock(blockValidation(application, block,receivedMessage.getReceiver()));
 		responseToSend.setReceiver(receivedMessage.getSender());
 		responseToSend.setSender(receivedMessage.getReceiver());
 		}catch(Exception exception) {
-			logger.error("manageBlockTEST", exception);
+			logger.error("manageBlock", exception);
 			responseToSend.setValidBlock(false);
 		}
 		return responseToSend;

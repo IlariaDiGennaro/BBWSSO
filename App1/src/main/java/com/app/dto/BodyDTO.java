@@ -2,6 +2,8 @@ package com.app.dto;
 
 import java.io.Serializable;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class BodyDTO implements Serializable{
 
 	/**
@@ -9,7 +11,9 @@ public class BodyDTO implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
+//	@Field("userName")
 	private String userName;
+//	@Field("appID")
 	private String appID;
 
 	public BodyDTO() {

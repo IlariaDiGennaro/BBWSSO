@@ -3,6 +3,8 @@ package com.app.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class HeaderDTO implements Serializable{
 
 	/**
@@ -14,9 +16,13 @@ public class HeaderDTO implements Serializable{
 		super();
 	}
 	
+//	@Field("prevHash")
 	private String prevHash;
+//	@Field("dataHash")
 	private String dataHash;
+//	@Field("timeStamp")
 	private Date timeStamp;
+//	@Field("nonce")
 	private Integer nonce;
 
 	public String getPrevHash() {

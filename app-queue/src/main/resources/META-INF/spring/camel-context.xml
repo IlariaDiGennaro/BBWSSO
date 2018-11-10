@@ -16,7 +16,7 @@
         <property name="shaAlgorithm" value="${sha.algorithm}"/>
         <property name="mongodbPrefix" value="${mongodb.prefix}"/>
         <property name="dateFormat" value="${date.format}"/>
-        <property name="mongodbCollectionActual" value="${mongodb.collection.actual}"></property>
+        <property name="mongodbCollectionActual" value="${mongodb.collection.actual}"/>
         <property name="mongodbCollectionArchive" value="${mongodb.collection.archive}"/>
     </bean>
     <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="activemq-connection-factory">
@@ -60,13 +60,15 @@
     </bean>
     <camelContext id="_camelContext" xmlns="http://camel.apache.org/schema/spring">
         <route id="_app1Route" streamCache="true">
-            <from id="_app1iq" uri="activemq:app1inputQueue"/>
             <!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
+            <from id="_app1iq" uri="activemq:app1inputQueue"/>
             <log id="_log1" message="from app1iq"/>
             <log id="_log2" message="header - ${headers}"/>
             <log id="_log3" message="body - ${body}"/>
+            <!-- <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>-->
+            <bean id="_bean1" method="manageBlock" ref="blockManager"/>
             <log id="_log4" message="to app1oq"/>
-            <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>
+            <!-- <bean id="_bean1" method="manageBlock" ref="blockManager"/>-->
             <choice id="_choice1">
                 <when id="_when1">
                     <simple>${body.receiver} == 'App1'</simple>
