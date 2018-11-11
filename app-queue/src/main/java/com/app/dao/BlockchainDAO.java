@@ -32,21 +32,19 @@ public class BlockchainDAO {
 		boolean createdBC = false;
 		//String mdbName = AppProperties.getMongodbPrefix().concat(genesisBlock.getBody().getAppID()); //MDBApp1
 		String mdbName = AppProperties.getMongodbPrefix().concat(receiver);
-		// TODO mdbName pass receiver because appID is null
-		// TODO il genesis block non deve controllare l'accesso ad app id perchè è solo login
 		MongoDatabase mdb = mongoClient.getDatabase(mdbName);
 		MongoCollection<Document> actualCollection = mdb.getCollection(AppProperties.getMongodbCollectionActual());
-		Bson bsonFilter = Filters.eq("_id", genesisBlock.getBody().getUserName().concat(AppUtils.convertDateToString(new Date())));
+		Bson bsonFilter = Filters.eq("_id", genesisBlock.getBody().getUserName().concat(AppUtils.convertDateToString(new Date(),AppProperties.getDateFormat())));
 		Document existingBlockchain = actualCollection.find(bsonFilter).first();
 		if(existingBlockchain != null) {
-			MongoCollection<Document> archiveCollection = mdb.getCollection(AppProperties.getMongodbCollectionArchive());
-			archiveCollection.deleteOne(bsonFilter);
-			archiveCollection.insertOne(existingBlockchain);
+//			MongoCollection<Document> archiveCollection = mdb.getCollection(AppProperties.getMongodbCollectionArchive());
+//			archiveCollection.deleteOne(bsonFilter);
+//			archiveCollection.insertOne(existingBlockchain);
 			actualCollection.deleteOne(bsonFilter);
 		}
 		
 		BlockchainDTO newBlockchain = new BlockchainDTO();
-		newBlockchain.setId(genesisBlock.getBody().getUserName().concat(AppUtils.convertDateToString(new Date())));
+		newBlockchain.setId(genesisBlock.getBody().getUserName().concat(AppUtils.convertDateToString(new Date(),AppProperties.getDateFormat())));
 		List<BlockDTO> blocks = new ArrayList<BlockDTO>();
 		blocks.add(genesisBlock);
 		newBlockchain.setBlocks(blocks);
@@ -56,5 +54,36 @@ public class BlockchainDAO {
 			createdBC = true;
 		
 		return createdBC;
+	}
+	
+	public BlockchainDTO findById(String username,String receiver) {
+		BlockchainDTO userBlockchain = null;
+		
+		String mdbName = AppProperties.getMongodbPrefix().concat(receiver);
+		MongoDatabase mdb = mongoClient.getDatabase(mdbName);
+		MongoCollection<Document> actualCollection = mdb.getCollection(AppProperties.getMongodbCollectionActual());
+		Bson bsonFilter = Filters.eq("_id", username.concat(AppUtils.convertDateToString(new Date(),AppProperties.getDateFormat())));
+		Document userBlockchainDocument = actualCollection.find(bsonFilter).first();
+		if(userBlockchainDocument != null) {
+			userBlockchain = (BlockchainDTO) AppUtils.convertFromJsonToObject(userBlockchainDocument.toJson(),BlockchainDTO.class);
+		}
+		return userBlockchain;
+	}
+	
+	public void invalidBlockchain(String username,String receiver) {
+		String mdbName = AppProperties.getMongodbPrefix().concat(receiver);
+		MongoDatabase mdb = mongoClient.getDatabase(mdbName);
+		MongoCollection<Document> actualCollection = mdb.getCollection(AppProperties.getMongodbCollectionActual());
+		Bson bsonFilter = Filters.eq("_id", username.concat(AppUtils.convertDateToString(new Date(),AppProperties.getDateFormat())));
+		actualCollection.deleteOne(bsonFilter);
+	}
+	
+	public void updateUserBlockchain(BlockchainDTO userBlockchain,String receiver) {
+		String mdbName = AppProperties.getMongodbPrefix().concat(receiver);
+		MongoDatabase mdb = mongoClient.getDatabase(mdbName);
+		MongoCollection<Document> actualCollection = mdb.getCollection(AppProperties.getMongodbCollectionActual());
+		Bson bsonFilter = Filters.eq("_id", userBlockchain.getId());
+//		actualCollection.updateOne(bsonFilter, Document.parse(AppUtils.convertFromObjectToJson(userBlockchain)));
+		actualCollection.updateOne(bsonFilter, new Document("$set", Document.parse(AppUtils.convertFromObjectToJson(userBlockchain))));
 	}
 }

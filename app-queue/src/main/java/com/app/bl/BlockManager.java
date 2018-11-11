@@ -5,6 +5,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.camel.Exchange;
 import org.bson.Document;
@@ -16,6 +17,7 @@ import com.app.dao.BlockchainDAO;
 import com.app.dao.UserDAO;
 import com.app.dto.ApplicationDTO;
 import com.app.dto.BlockDTO;
+import com.app.dto.BlockchainDTO;
 import com.app.dto.BodyDTO;
 import com.app.dto.HeaderDTO;
 import com.app.dto.MessageDTO;
@@ -203,13 +205,72 @@ public class BlockManager {
 			}
 			
 		}
+		
+		else {
+			// APPi BLOCK
+			String username = block.getBody().getUserName();
+			String app = block.getBody().getAppID();
+			String dataHash = header.getDataHash();
+			if(username == null || "".equals(username) || app == null || "".equals(app) || dataHash == null || "".equals(dataHash)) {
+				String exception = "Block not valid";
+				throw new Exception(exception);
+			}
+			String calculatedDataHash = SecurityUtils.sha256Hash(username.concat(app));
+			if(!calculatedDataHash.equals(dataHash)) {
+				String exception = "Block not valid";
+				throw new Exception(exception);
+			}
+			
+			BlockchainDTO userBlockchain = blockchainDAO.findById(username, receiver);
+			if(userBlockchain == null) {
+				String exception = "Blockchain for user "+username +" not found.";
+				throw new Exception(exception);
+			}
+			
+			boolean [] output = validBlockchainAndFoundBlock(userBlockchain,block);
+			boolean validBlockchain = output[0];
+			boolean foundBlock = output[1];
+			
+			if(!validBlockchain) {
+				blockchainDAO.invalidBlockchain(username, receiver);
+				String exception = "Blockchain not valid";
+				throw new Exception(exception);
+			}
+			
+			if(foundBlock) {
+				validBlock = true;
+			}
+			
+			else {
+				// block not found
+				
+				// search user in db
+				UserDTO user = userDAO.readByUsername(username);
+				if(user == null) {
+					String exception = "User ".concat(username).concat(" not found.");
+					throw new Exception(exception);
+				}
+				
+				boolean accessAllowed = accessAllowed(String.valueOf(application.getId()), user.getApps());
+				if(!accessAllowed) {
+					String exception = "User ".concat(username).concat(" cannot access Application ").concat(appID);
+					throw new Exception(exception);
+				}
+				
+				userBlockchain.getBlocks().add(block);
+				blockchainDAO.updateUserBlockchain(userBlockchain, receiver);
+				validBlock = true;
+			}
+				
+				
+		} 
+		
 		return validBlock;
 	}
 	
 	private boolean accessAllowed(String appID, String apps) {
 		boolean accessAllowed = false;
 		if(apps.contains("|")) {
-			// TODO split
 			String [] appArray = apps.split("|");
 			for (String id : appArray) {
 				if(id.equals(appID)) {
@@ -222,5 +283,74 @@ public class BlockManager {
 			accessAllowed = appID.equals(apps);
 		}
 		return accessAllowed;
+	}
+	
+	private boolean [] validBlockchainAndFoundBlock(BlockchainDTO userBlockchain, BlockDTO blockToFound) throws Exception {
+		boolean [] output = new boolean[2];
+		output[0] = true; // valid blockchain
+		output[1] = false; // found block
+
+		try {
+			String vPrevHash = null;
+
+			List<BlockDTO> blocks = userBlockchain.getBlocks();
+
+			if(blocks == null || blocks.isEmpty()) {
+				output[0] = false;
+				return output;
+			}
+
+			ListIterator<BlockDTO> iterator = blocks.listIterator();
+			while(iterator.hasNext()) {
+				BlockDTO block = iterator.next();
+				String calculatedDataHash = null;
+
+				if(block.getBody().getAppID() != null && !"".equals(block.getBody().getAppID()))
+					calculatedDataHash = SecurityUtils.sha256Hash(block.getBody().getUserName().concat(block.getBody().getAppID()));
+
+				else {
+					UserDTO user = userDAO.readByUsername(block.getBody().getUserName());
+					if(user == null) {
+						output[0] = false;
+						break;
+					}
+					calculatedDataHash = SecurityUtils.sha256Hash(block.getBody().getUserName().concat(user.getPassword()));
+				}
+
+				if(!calculatedDataHash.equals(block.getHeader().getDataHash())) {
+					output[0] = false;
+					break;
+				}
+
+				if(block.getHeader().getPrevHash() != null && !"".equals(block.getHeader().getPrevHash())) {
+					// not genesis block
+					if(vPrevHash != null && !"".equals(vPrevHash)) {
+						if(!vPrevHash.equals(block.getHeader().getPrevHash())) {
+							output[0] = false;
+							break;
+						}
+					}
+				}
+					HeaderDTO header = block.getHeader();
+					String stringToHash = header.getDataHash().concat(
+							header.getPrevHash()!=null? header.getPrevHash() : "")
+							.concat(String.valueOf(header.getNonce()))
+							.concat(AppUtils.convertDateToString(header.getTimeStamp(),AppProperties.getDateFormatHour()));
+					vPrevHash = SecurityUtils.sha256Hash(stringToHash);
+				
+
+				if(!output[1] && block.getBody().getUserName().equals(blockToFound.getBody().getUserName()) && 
+						(block.getBody().getAppID() != null? block.getBody().getAppID() : "").equals(blockToFound.getBody().getAppID())) {
+					output[1] = true;
+				}
+
+
+			}
+		} catch (Exception e) {
+			logger.error("validBlockchainAndFoundBlock", e);
+			throw new Exception(e);
+		}
+
+		return output;
 	}
 }

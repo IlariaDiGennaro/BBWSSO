@@ -9,6 +9,7 @@ public class AppProperties {
 	private static String mongodbCollectionActual;
 	private static String dateFormat;
 	private static String mongodbCollectionArchive;
+	private static String dateFormatHour;
 	
 	public static String getX509Certificate() {
 		return x509Certificate;
@@ -73,6 +74,12 @@ public class AppProperties {
 	public static void setMongodbCollectionArchive(String mongodbCollectionArchive) {
 		AppProperties.mongodbCollectionArchive = mongodbCollectionArchive;
 	}
-	
-	
+
+	public static String getDateFormatHour() {
+		return dateFormatHour;
+	}
+
+	public static void setDateFormatHour(String dateFormatHour) {
+		AppProperties.dateFormatHour = dateFormatHour;
+	}
 }

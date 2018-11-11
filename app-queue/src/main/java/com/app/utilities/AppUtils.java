@@ -44,8 +44,8 @@ public class AppUtils {
 		return object;
 	}
 	
-	public static String convertDateToString(Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat(AppProperties.getDateFormat());
+	public static String convertDateToString(Date date,String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		return sdf.format(date);
 	}
 }
