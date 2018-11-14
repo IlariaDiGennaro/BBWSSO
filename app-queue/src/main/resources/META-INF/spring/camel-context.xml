@@ -62,13 +62,13 @@
     <camelContext id="_camelContext" xmlns="http://camel.apache.org/schema/spring">
         <route id="_app1Route" streamCache="true">
             <!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
-            <from id="_app1iq" uri="activemq:app1inputQueue"/>
             <!-- <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>-->
+            <from id="_app1iq" uri="activemq:app1inputQueue"/>
             <log id="_log1" message="from app1iq"/>
             <log id="_log2" message="header - ${headers}"/>
             <log id="_log3" message="body - ${body}"/>
-                        <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>
-<!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
+                        <bean id="_bean1" method="manageBlock" ref="blockManager"/>
+<!--             <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/> -->
             <log id="_log4" message="to app1oq"/>
             <choice id="_choice1">
                 <when id="_when1">
