@@ -65,8 +65,9 @@ public class BlockManager {
 
 	public ResponseDTO manageBlock(Exchange exchange) {
 		ResponseDTO responseToSend = new ResponseDTO();
-		try {
 		MessageDTO receivedMessage = (MessageDTO) exchange.getIn().getBody();
+		try {
+		
 		//TODO manage Block
 		String sender = receivedMessage.getSender();
 		// read application public key from db
@@ -102,6 +103,8 @@ public class BlockManager {
 		responseToSend.setSender(receivedMessage.getReceiver());
 		}catch(Exception exception) {
 			logger.error("manageBlock", exception);
+			responseToSend.setReceiver(receivedMessage.getSender());
+			responseToSend.setSender(receivedMessage.getReceiver());
 			responseToSend.setValidBlock(false);
 		}
 		return responseToSend;
@@ -109,8 +112,9 @@ public class BlockManager {
 	
 	public ResponseDTO manageBlockTEST(Exchange exchange) throws Exception {
 		ResponseDTO responseToSend = new ResponseDTO();
-		try {
 		MessageDTO receivedMessage = (MessageDTO) AppUtils.convertFromJsonToObject(exchange.getIn().getBody().toString(), MessageDTO.class);
+		try {
+		
 	
 		//TODO manage Block
 		String sender = receivedMessage.getSender();
@@ -149,6 +153,8 @@ public class BlockManager {
 		}
 		catch(Exception exception) {
 			logger.error("manageBlockTEST", exception);
+			responseToSend.setReceiver(receivedMessage.getSender());
+			responseToSend.setSender(receivedMessage.getReceiver());
 			responseToSend.setValidBlock(false);
 		}
 		return responseToSend;
