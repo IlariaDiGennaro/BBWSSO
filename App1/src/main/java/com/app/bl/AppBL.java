@@ -2,12 +2,16 @@ package com.app.bl;
 
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+
+import javax.jms.JMSException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,7 +95,7 @@ public class AppBL {
 
 			MessageDTO message = new MessageDTO();
 			message.setSender(appProperties.getThisAppIdentifier());
-			message.setReceiver(appProperties.getOtherAppIdentifiers());
+//			message.setReceiver(appProperties.getOtherAppIdentifiers());
 			message.setEncryptedBlock(encryptedBlock);
 			message.setEncryptedSimmetricKey(encryptedSimmetricKey);
 
@@ -111,19 +115,23 @@ public class AppBL {
 
 
 			//jmsTemplate.convertAndSend("app1inputQueue", message);
-			String correlationID = UUID.randomUUID().toString();
-			jmsTemplate.convertAndSend("app1inputQueue", message, new CorrelationIdPostProcessor(correlationID));
-			// TODO send to all the net
-
+//			String correlationID = UUID.randomUUID().toString();
+			System.out.println("message.size = " + appUtils.convertObjectToBytes(message).length);
+//			jmsTemplate.convertAndSend("app1inputQueue", message, new CorrelationIdPostProcessor(correlationID));
+			
+			// send to all the net
+			String correlationID = sendMessageToNetwork(message);
+			
 			//			Message messageReceived = jmsTemplate.receive("app1outputQueue");
 			//			
 			//			messageReceived.getBody(java.io.Serializable.class);
 			//ResponseDTO response = (ResponseDTO) jmsTemplate.receiveAndConvert("app1outputQueue");
-			ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert("app1outputQueue", "JMSCorrelationID='"+correlationID+"'");
+//			ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert("app1outputQueue", "JMSCorrelationID='"+correlationID+"'");
 
-			// TODO receive true from 50% +1 of the net
+			// receive true from 50% +1 of the net
+			boolean validBlock = receiveResponseFromNetwork(correlationID);
 
-			if(!response.isValidBlock())
+			if(!validBlock)
 				return false;
 
 			// TODO build new blockchain with genesisBlock
@@ -197,18 +205,22 @@ public class AppBL {
 		
 		MessageDTO message = new MessageDTO();
 		message.setSender(appProperties.getThisAppIdentifier());
-		message.setReceiver(appProperties.getOtherAppIdentifiers());
+//		message.setReceiver(appProperties.getOtherAppIdentifiers());
 		message.setEncryptedBlock(encryptedBlock);
 		message.setEncryptedSimmetricKey(encryptedSimmetricKey);
 		
-		String correlationID = UUID.randomUUID().toString();
-		jmsTemplate.convertAndSend("app1inputQueue", message, new CorrelationIdPostProcessor(correlationID));
-		// TODO send to all the net
+//		String correlationID = UUID.randomUUID().toString();
+//		jmsTemplate.convertAndSend("app1inputQueue", message, new CorrelationIdPostProcessor(correlationID));
 		
-		ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert("app1outputQueue", "JMSCorrelationID='"+correlationID+"'");
-		// TODO receive true from 50% +1 of the net
+		// send to all the net
+		String correlationID = sendMessageToNetwork(message);
 		
-		if(response.isValidBlock()) {
+//		ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert("app1outputQueue", "JMSCorrelationID='"+correlationID+"'");
+		
+		// receive true from 50% +1 of the net
+		boolean validBlock = receiveResponseFromNetwork(correlationID);
+		
+		if(validBlock) {
 			// TODO
 			String userBlockchainID = userCookie.concat(appUtils.convertDateToString(new Date(), appProperties.getDateFormat()));
 			if(!blockchainRepository.existsById(userBlockchainID)) {
@@ -302,5 +314,50 @@ public class AppBL {
 		}
 
 		return output;
+	}
+	
+	private String sendMessageToNetwork(MessageDTO message) {
+		List<String> receivers = getReceivers();
+		String correlationID = UUID.randomUUID().toString();
+		
+		for (String receiver : receivers) {
+			message.setReceiver(receiver);
+			String inputQueueName = receiver.toLowerCase().concat(appProperties.getInputQueueSuffix());
+			jmsTemplate.convertAndSend(inputQueueName, message, new CorrelationIdPostProcessor(correlationID));
+		}
+		
+		return correlationID;
+	}
+	
+	private boolean receiveResponseFromNetwork(String correlationID) throws Exception {
+		boolean validBlock = false;
+		List<String> receivers = getReceivers();
+		int nMandatoryMessages = receivers.size()/2 +1;
+		int nValidBlockMessages = 0;
+		String outputQueue = appProperties.getThisAppIdentifier().toLowerCase().concat(appProperties.getOutputQueueSuffix());
+		while(nValidBlockMessages < nMandatoryMessages) {
+			ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert(outputQueue, "JMSCorrelationID='"+correlationID+"'");
+			if(response.isValidBlock())
+				nValidBlockMessages++;
+		}
+		if(nValidBlockMessages == nMandatoryMessages)
+			validBlock = true;
+		return validBlock;
+	}
+	
+	private List<String> getReceivers(){
+		List<String> receivers = new ArrayList<String>();
+		
+		String receiversString = appProperties.getOtherAppIdentifiers();
+		if(receiversString.contains(appProperties.getSeparator())) {
+			String [] receiversArray = receiversString.split(appProperties.getSeparator());
+			for (int i = 0; i < receiversArray.length; i++) {
+				receivers.add(receiversArray[i]);
+			}
+		}
+		else
+			receivers.add(appProperties.getOtherAppIdentifiers());
+		Collections.shuffle(receivers);
+		return receivers;
 	}
 }

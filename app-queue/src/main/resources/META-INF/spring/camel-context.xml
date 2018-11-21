@@ -66,8 +66,8 @@
             <from id="_app1iq" uri="activemq:app1inputQueue"/>
             <log id="_log1" message="from app1iq"/>
             <log id="_log2" message="header - ${headers}"/>
+            <!--             <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/> -->
             <log id="_log3" message="body - ${body}"/>
-<!--                         <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/> -->
             <bean id="_bean1" method="manageBlock" ref="blockManager"/>
             <log id="_log4" message="to app1oq"/>
             <choice id="_choice1">
@@ -81,6 +81,44 @@
                     <to id="_app2oq" uri="activemq:app2outputQueue"/>
                 </otherwise>
             </choice>
+        </route>
+        <!-- app2Route -->
+        <route id="_app2Route" streamCache="true">
+        	<from id="_app2iq" uri="activemq:app2inputQueue"/>
+        	<log message="from app2iq"/>
+        	<log message="header - ${headers}"/>
+        	<bean method="manageBlock" ref="blockManager"/>
+        	<choice>
+        		<when>
+        			<simple>${body.receiver} == 'App1'</simple>
+        			<log message="to app1oq"/>
+        			<to uri="activemq:app1outputQueue"/>
+        		</when>
+        		<when>
+        			<simple>${body.receiver} == 'App3'</simple>
+        			<log message="to app3oq"/>
+        			<to uri="activemq:app3outputQueue"/>
+        		</when>
+        	</choice>
+        </route>
+        <!-- app2Route -->
+        <route id="_app3Route" streamCache="true">
+        	<from id="_app3iq" uri="activemq:app3inputQueue"/>
+        	<log message="from app3iq"/>
+        	<log message="header - ${headers}"/>
+        	<bean method="manageBlock" ref="blockManager"/>
+        	<choice>
+        		<when>
+        			<simple>${body.receiver} == 'App1'</simple>
+        			<log message="to app1oq"/>
+        			<to uri="activemq:app1outputQueue"/>
+        		</when>
+        		<when>
+        			<simple>${body.receiver} == 'App2'</simple>
+        			<log message="to app2oq"/>
+        			<to uri="activemq:app2outputQueue"/>
+        		</when>
+        	</choice>
         </route>
     </camelContext>
 </beans>

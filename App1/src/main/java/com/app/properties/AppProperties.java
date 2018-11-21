@@ -47,6 +47,15 @@ public class AppProperties {
 	
 	@Value("${date.format.hour}")
 	private String dateFormatHour;
+	
+	@Value("${separator}")
+	private String separator;
+	
+	@Value("${input.queue.suffix}")
+	private String inputQueueSuffix;
+	
+	@Value("${output.queue.suffix}")
+	private String outputQueueSuffix;
 
 	public String getLoginCookie() {
 		return loginCookie;
@@ -159,4 +168,30 @@ public class AppProperties {
 	public void setDateFormatHour(String dateFormatHour) {
 		this.dateFormatHour = dateFormatHour;
 	}
+
+	public String getSeparator() {
+		return separator;
+	}
+
+	public void setSeparator(String separator) {
+		this.separator = separator;
+	}
+
+	public String getOutputQueueSuffix() {
+		return outputQueueSuffix;
+	}
+
+	public void setOutputQueueSuffix(String outputQueueSuffix) {
+		this.outputQueueSuffix = outputQueueSuffix;
+	}
+
+	public String getInputQueueSuffix() {
+		return inputQueueSuffix;
+	}
+
+	public void setInputQueueSuffix(String inputQueueSuffix) {
+		this.inputQueueSuffix = inputQueueSuffix;
+	}
+	
+	
 }
