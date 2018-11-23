@@ -2,24 +2,20 @@ package com.app.bl;
 
 import java.security.Key;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-
-import javax.jms.JMSException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import com.app.db.ApplicationRepository;
 import com.app.db.BlockchainRepository;
 import com.app.db.UserRepository;
 import com.app.dto.BlockDTO;
@@ -329,16 +325,28 @@ public class AppBL {
 		return correlationID;
 	}
 	
-	private boolean receiveResponseFromNetwork(String correlationID) throws Exception {
+//	private boolean receiveResponseFromNetwork(String correlationID) throws Exception {
+	private boolean receiveResponseFromNetwork(String correlationID) {
 		boolean validBlock = false;
 		List<String> receivers = getReceivers();
 		int nMandatoryMessages = receivers.size()/2 +1;
 		int nValidBlockMessages = 0;
+		int nIterations = 0;
 		String outputQueue = appProperties.getThisAppIdentifier().toLowerCase().concat(appProperties.getOutputQueueSuffix());
 		while(nValidBlockMessages < nMandatoryMessages) {
-			ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert(outputQueue, "JMSCorrelationID='"+correlationID+"'");
-			if(response.isValidBlock())
-				nValidBlockMessages++;
+			
+			if(nIterations >= nMandatoryMessages)
+				break;
+			try {
+				ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert(outputQueue, "JMSCorrelationID='"+correlationID+"'");
+				if(response.isValidBlock())
+					nValidBlockMessages++;
+				nIterations++;
+			}
+			catch(JmsException e) {
+				logger.info("receiveResponseFromNetwork timeout "+correlationID, e);
+				nIterations++;
+			}
 		}
 		if(nValidBlockMessages == nMandatoryMessages)
 			validBlock = true;
