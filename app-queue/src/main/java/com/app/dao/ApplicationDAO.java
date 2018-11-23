@@ -41,6 +41,9 @@ public class ApplicationDAO {
 				application.setAppID(rs.getString("app_id"));
 				application.setCertificate(rs.getBlob("x509_certificate"));
 			}
+			rs.close();
+			ps.close();
+			connection.close();
 		} catch (SQLException e) {
 			logger.error("ApplicationDAO", e);
 			throw new Exception(e);

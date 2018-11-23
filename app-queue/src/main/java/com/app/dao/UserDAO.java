@@ -42,6 +42,9 @@ public class UserDAO {
 				user.setPassword(rs.getString("password"));
 				user.setApps(rs.getString("apps"));
 			}
+			rs.close();
+			ps.close();
+			connection.close();
 		} catch (SQLException e) {
 			logger.error("UserDAO", e);
 			throw new Exception(e);

@@ -52,7 +52,6 @@ public class BlockchainDAO {
 		Document createdBlockchain = actualCollection.find(bsonFilter).first();
 		if(createdBlockchain != null)
 			createdBC = true;
-		
 		return createdBC;
 	}
 	
