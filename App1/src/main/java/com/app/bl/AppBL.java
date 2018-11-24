@@ -68,7 +68,7 @@ public class AppBL {
 			HeaderDTO header = new HeaderDTO();
 			header.setPrevHash(null);
 			header.setDataHash(securityUtils.sha256Hash(user.getUsername().concat(user.getPassword())));
-			header.setTimeStamp(new Date());
+			header.setTimeStamp(appUtils.convertDateToString(new Date(), appProperties.getDateFormatHour()));
 			header.setNonce(nonceGenerator.nextInt());
 
 			BodyDTO body = new BodyDTO();
@@ -162,7 +162,7 @@ public class AppBL {
 		
 		HeaderDTO header = new HeaderDTO();
 		
-		header.setTimeStamp(new Date());
+		header.setTimeStamp(appUtils.convertDateToString(new Date(), appProperties.getDateFormatHour()));
 		header.setNonce(nonceGenerator.nextInt());
 		
 		BodyDTO body = new BodyDTO();
@@ -183,7 +183,7 @@ public class AppBL {
 					lastBlockHeader.getDataHash().concat(
 							lastBlockHeader.getPrevHash()!=null?lastBlockHeader.getPrevHash():"")
 					.concat(String.valueOf(lastBlockHeader.getNonce()))
-					.concat(appUtils.convertDateToString(lastBlockHeader.getTimeStamp(),appProperties.getDateFormatHour())));
+					.concat(lastBlockHeader.getTimeStamp()));
 			header.setPrevHash(prevHash);
 			
 		}
@@ -293,7 +293,7 @@ public class AppBL {
 					String stringToHash = header.getDataHash().concat(
 							header.getPrevHash()!=null? header.getPrevHash() : "")
 							.concat(String.valueOf(header.getNonce()))
-							.concat(appUtils.convertDateToString(header.getTimeStamp(),appProperties.getDateFormatHour()));
+							.concat(header.getTimeStamp());
 					vPrevHash = securityUtils.sha256Hash(stringToHash);
 				
 
@@ -330,12 +330,13 @@ public class AppBL {
 		boolean validBlock = false;
 		List<String> receivers = getReceivers();
 		int nMandatoryMessages = receivers.size()/2 +1;
+		int nTotalMessages = receivers.size();
 		int nValidBlockMessages = 0;
 		int nIterations = 0;
 		String outputQueue = appProperties.getThisAppIdentifier().toLowerCase().concat(appProperties.getOutputQueueSuffix());
 		while(nValidBlockMessages < nMandatoryMessages) {
 			
-			if(nIterations >= nMandatoryMessages)
+			if(nIterations >= nTotalMessages)
 				break;
 			try {
 				ResponseDTO response = (ResponseDTO) jmsTemplate.receiveSelectedAndConvert(outputQueue, "JMSCorrelationID='"+correlationID+"'");

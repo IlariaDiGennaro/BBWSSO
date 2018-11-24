@@ -21,7 +21,7 @@ public class HeaderDTO implements Serializable{
 //	@Field("dataHash")
 	private String dataHash;
 //	@Field("timeStamp")
-	private Date timeStamp;
+	private String timeStamp;
 //	@Field("nonce")
 	private Integer nonce;
 
@@ -37,10 +37,10 @@ public class HeaderDTO implements Serializable{
 	public void setDataHash(String dataHash) {
 		this.dataHash = dataHash;
 	}
-	public Date getTimeStamp() {
+	public String getTimeStamp() {
 		return timeStamp;
 	}
-	public void setTimeStamp(Date timeStamp) {
+	public void setTimeStamp(String timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 	public Integer getNonce() {
