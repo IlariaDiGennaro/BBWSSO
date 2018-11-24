@@ -16,7 +16,7 @@ public class HeaderDTO implements Serializable{
 	
 	private String prevHash;
 	private String dataHash;
-	private Date timeStamp;
+	private String timeStamp;
 	private Integer nonce;
 
 	public String getPrevHash() {
@@ -31,10 +31,10 @@ public class HeaderDTO implements Serializable{
 	public void setDataHash(String dataHash) {
 		this.dataHash = dataHash;
 	}
-	public Date getTimeStamp() {
+	public String getTimeStamp() {
 		return timeStamp;
 	}
-	public void setTimeStamp(Date timeStamp) {
+	public void setTimeStamp(String timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 	public Integer getNonce() {

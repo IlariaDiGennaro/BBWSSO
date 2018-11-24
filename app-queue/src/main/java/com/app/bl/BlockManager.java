@@ -341,7 +341,7 @@ public class BlockManager {
 					String stringToHash = header.getDataHash().concat(
 							header.getPrevHash()!=null? header.getPrevHash() : "")
 							.concat(String.valueOf(header.getNonce()))
-							.concat(AppUtils.convertDateToString(header.getTimeStamp(),AppProperties.getDateFormatHour()));
+							.concat(header.getTimeStamp());
 					vPrevHash = SecurityUtils.sha256Hash(stringToHash);
 				
 

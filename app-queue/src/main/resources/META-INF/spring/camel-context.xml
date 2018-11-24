@@ -64,61 +64,574 @@
             <!--             <bean id="_bean1" method="manageBlock" ref="blockManager"/> -->
             <!-- <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/>-->
             <from id="_app1iq" uri="activemq:app1inputQueue"/>
-            <log id="_log1" message="from app1iq"/>
-            <log id="_log2" message="header - ${headers}"/>
             <!--             <bean id="_bean1" method="manageBlockTEST" ref="blockManager"/> -->
-            <log id="_log3" message="body - ${body}"/>
-            <bean id="_bean1" method="manageBlock" ref="blockManager"/>
-            <log id="_log4" message="to app1oq"/>
-            <choice id="_choice1">
-                <when id="_when1">
-                    <simple>${body.receiver} == 'App1'</simple>
-                    <log id="_log5" message="when App1"/>
-                    <to id="_app1oq" uri="activemq:app1outputQueue"/>
+            <log message="from app1iq"/>
+            <log message="header - ${headers}"/>
+<!--             <log message="body - ${body}"/> -->
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
                 </when>
-                <otherwise id="_otherwise1">
-                    <log id="_log6" message="otherwise"/>
-                    <to id="_app2oq" uri="activemq:app2outputQueue"/>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
                 </otherwise>
             </choice>
         </route>
         <!-- app2Route -->
         <route id="_app2Route" streamCache="true">
-        	<from id="_app2iq" uri="activemq:app2inputQueue"/>
-        	<log message="from app2iq"/>
-        	<log message="header - ${headers}"/>
-        	<bean method="manageBlock" ref="blockManager"/>
-        	<choice>
-        		<when>
-        			<simple>${body.receiver} == 'App1'</simple>
-        			<log message="to app1oq"/>
-        			<to uri="activemq:app1outputQueue"/>
-        		</when>
-        		<when>
-        			<simple>${body.receiver} == 'App3'</simple>
-        			<log message="to app3oq"/>
-        			<to uri="activemq:app3outputQueue"/>
-        		</when>
-        	</choice>
+            <from id="_app2iq" uri="activemq:app2inputQueue"/>
+            <log message="from app2iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
         </route>
-        <!-- app2Route -->
+        <!-- app3Route -->
         <route id="_app3Route" streamCache="true">
-        	<from id="_app3iq" uri="activemq:app3inputQueue"/>
-        	<log message="from app3iq"/>
-        	<log message="header - ${headers}"/>
-        	<bean method="manageBlock" ref="blockManager"/>
-        	<choice>
-        		<when>
-        			<simple>${body.receiver} == 'App1'</simple>
-        			<log message="to app1oq"/>
-        			<to uri="activemq:app1outputQueue"/>
-        		</when>
-        		<when>
-        			<simple>${body.receiver} == 'App2'</simple>
-        			<log message="to app2oq"/>
-        			<to uri="activemq:app2outputQueue"/>
-        		</when>
-        	</choice>
+            <from id="_app3iq" uri="activemq:app3inputQueue"/>
+            <log message="from app3iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app4Route -->
+        <route id="_app4Route" streamCache="true">
+            <from id="_app4iq" uri="activemq:app4inputQueue"/>
+            <log message="from app4iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app5Route -->
+        <route id="_app5Route" streamCache="true">
+            <from id="_app5iq" uri="activemq:app5inputQueue"/>
+            <log message="from app5iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app6Route -->
+        <route id="_app6Route" streamCache="true">
+            <from id="_app6iq" uri="activemq:app6inputQueue"/>
+            <log message="from app6iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app7Route -->
+        <route id="_app7Route" streamCache="true">
+            <from id="_app7iq" uri="activemq:app7inputQueue"/>
+            <log message="from app7iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app8Route -->
+        <route id="_app8Route" streamCache="true">
+            <from id="_app8iq" uri="activemq:app8inputQueue"/>
+            <log message="from app8iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app9Route -->
+        <route id="_app9Route" streamCache="true">
+            <from id="_app9iq" uri="activemq:app9inputQueue"/>
+            <log message="from app9iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App10'</simple>
+                    <log message="to app10oq"/>
+                    <to uri="activemq:app10outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
+        </route>
+        <!-- app10Route -->
+        <route id="_app10Route" streamCache="true">
+            <from id="_app10iq" uri="activemq:app10inputQueue"/>
+            <log message="from app10iq"/>
+            <log message="header - ${headers}"/>
+            <bean method="manageBlock" ref="blockManager"/>
+            <choice>
+                <when>
+                    <simple>${body.receiver} == 'App1'</simple>
+                    <log message="to app1oq"/>
+                    <to uri="activemq:app1outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App2'</simple>
+                    <log message="to app2oq"/>
+                    <to uri="activemq:app2outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App3'</simple>
+                    <log message="to app3oq"/>
+                    <to uri="activemq:app3outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App4'</simple>
+                    <log message="to app4oq"/>
+                    <to uri="activemq:app4outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App5'</simple>
+                    <log message="to app5oq"/>
+                    <to uri="activemq:app5outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App6'</simple>
+                    <log message="to app6oq"/>
+                    <to uri="activemq:app6outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App7'</simple>
+                    <log message="to app7oq"/>
+                    <to uri="activemq:app7outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App8'</simple>
+                    <log message="to app8oq"/>
+                    <to uri="activemq:app8outputQueue"/>
+                </when>
+                <when>
+                    <simple>${body.receiver} == 'App9'</simple>
+                    <log message="to app9oq"/>
+                    <to uri="activemq:app9outputQueue"/>
+                </when>
+                <otherwise>
+                    <log message="no queue found"/>
+                </otherwise>
+            </choice>
         </route>
     </camelContext>
 </beans>
