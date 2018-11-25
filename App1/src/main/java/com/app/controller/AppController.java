@@ -64,6 +64,9 @@ public class AppController {
     		if(loginCookieFound) {
 
     			if(appBL.userAccess(loginCookieValue)) {
+    				User user = new User();
+    				user.setUsername(loginCookieValue);
+    				model.put("user", user);
     				return "appHome";
     			}
     			else {
@@ -105,6 +108,7 @@ public class AppController {
 				long end = expirationDate.getTimeInMillis();
 				loginCookie.setMaxAge((int) ((end-start)/1000));
 				response.addCookie(loginCookie);
+				model.put("user", user);
 				return "appHome";
 			}
 			else

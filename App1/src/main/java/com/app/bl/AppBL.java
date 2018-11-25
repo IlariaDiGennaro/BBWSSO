@@ -226,8 +226,10 @@ public class AppBL {
 			boolean [] result = validBlockchainAndFoundBlock(userBlockchain, appBlock);
 			boolean validBlockchain = result[0];
 			boolean foundBlock = result[1];
-			if(!validBlockchain)
+			if(!validBlockchain) {
+				blockchainRepository.deleteById(userBlockchainID);
 				return false;
+			}
 			if(foundBlock)
 				return true;
 			userBlockchain.getBlocks().add(appBlock);
@@ -257,6 +259,7 @@ public class AppBL {
 			ListIterator<BlockDTO> iterator = blocks.listIterator();
 			while(iterator.hasNext()) {
 				BlockDTO block = iterator.next();
+				
 				String calculatedDataHash = null;
 
 				if(block.getBody().getAppID() != null && !"".equals(block.getBody().getAppID()))
