@@ -10,6 +10,8 @@ public class AppProperties {
 	private static String dateFormat;
 	private static String mongodbCollectionArchive;
 	private static String dateFormatHour;
+	private static String appSeparator;
+	private static String appSeparatorEscaped;
 	
 	public static String getX509Certificate() {
 		return x509Certificate;
@@ -81,5 +83,21 @@ public class AppProperties {
 
 	public static void setDateFormatHour(String dateFormatHour) {
 		AppProperties.dateFormatHour = dateFormatHour;
+	}
+
+	public static String getAppSeparator() {
+		return appSeparator;
+	}
+
+	public static void setAppSeparator(String appSeparator) {
+		AppProperties.appSeparator = appSeparator;
+	}
+
+	public static String getAppSeparatorEscaped() {
+		return appSeparatorEscaped;
+	}
+
+	public static void setAppSeparatorEscaped(String appSeparatorEscaped) {
+		AppProperties.appSeparatorEscaped = appSeparatorEscaped;
 	}
 }

@@ -276,8 +276,8 @@ public class BlockManager {
 	
 	private boolean accessAllowed(String appID, String apps) {
 		boolean accessAllowed = false;
-		if(apps.contains("|")) {
-			String [] appArray = apps.split("|");
+		if(apps.contains(AppProperties.getAppSeparator())) {
+			String [] appArray = apps.split(AppProperties.getAppSeparatorEscaped());
 			for (String id : appArray) {
 				if(id.equals(appID)) {
 					accessAllowed = true;
