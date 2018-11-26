@@ -112,7 +112,6 @@ public class AppBL {
 
 			//jmsTemplate.convertAndSend("app1inputQueue", message);
 //			String correlationID = UUID.randomUUID().toString();
-			System.out.println("message.size = " + appUtils.convertObjectToBytes(message).length);
 //			jmsTemplate.convertAndSend("app1inputQueue", message, new CorrelationIdPostProcessor(correlationID));
 			
 			// send to all the net
@@ -371,5 +370,68 @@ public class AppBL {
 			receivers.add(appProperties.getOtherAppIdentifiers());
 		Collections.shuffle(receivers);
 		return receivers;
+	}
+	
+	public void userLogout(User user) throws Exception {
+		try {
+			// retrieve user identifier
+			String username = user.getUsername();
+			String userBlockchainID = username.concat(appUtils.convertDateToString(new Date(), appProperties.getDateFormat()));
+			
+			// blockchain exists
+			if(!blockchainRepository.existsById(userBlockchainID)) {
+				return;
+			}
+
+			// retrieve userBlockchain
+			BlockchainDTO userBlockchain = blockchainRepository.findById(userBlockchainID).get();
+			
+			// build LogoutBlock
+			
+			if(nonceGenerator == null)
+				nonceGenerator = new Random();
+			
+			HeaderDTO header = new HeaderDTO();
+			header.setPrevHash(null);
+			header.setDataHash(securityUtils.sha256Hash(user.getUsername()));
+			header.setTimeStamp(appUtils.convertDateToString(new Date(), appProperties.getDateFormatHour()));
+			header.setNonce(nonceGenerator.nextInt());
+
+			BodyDTO body = new BodyDTO();
+			body.setUserName(user.getUsername());
+
+			BlockDTO logoutBlock = new BlockDTO();
+			logoutBlock.setHeader(header);
+			logoutBlock.setBody(body);
+
+			// add LogoutBlock to UserBlockchain
+			userBlockchain.getBlocks().add(logoutBlock);
+			blockchainRepository.save(userBlockchain);
+			
+			// invalid blockchain
+			blockchainRepository.deleteById(userBlockchainID);
+			
+			// send LogoutBlock to network
+			
+			Key simmetricKey = securityUtils.getSimmetricKey();
+			String encryptedBlock = securityUtils.encryptObject(logoutBlock, appProperties.getAesAlgorithm(), simmetricKey);
+
+			Key privateKey = securityUtils.getPrivateKey(appProperties.getEncryptionKeyFullPath());
+			String encryptedSimmetricKey = securityUtils.encryptObject(simmetricKey, appProperties.getRsaAlgorithm(), privateKey);
+
+			MessageDTO message = new MessageDTO();
+			message.setSender(appProperties.getThisAppIdentifier());
+			message.setEncryptedBlock(encryptedBlock);
+			message.setEncryptedSimmetricKey(encryptedSimmetricKey);
+
+			// send to all the net
+			sendMessageToNetwork(message);
+			
+			return;
+
+		} catch (Exception e) {
+			logger.error(e);
+			throw e;
+		}
 	}
 }

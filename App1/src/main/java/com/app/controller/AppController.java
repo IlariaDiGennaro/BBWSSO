@@ -124,4 +124,27 @@ public class AppController {
     	
     }
 
+    @RequestMapping(value="/logout")
+    public String logout(@ModelAttribute("user") User user, HttpServletRequest request, HttpServletResponse response,Map<String, Object> model) {
+    	try {
+			appBL.userLogout(user);
+			// delete loginCookie
+    		Cookie[] cookies = request.getCookies();
+    		if(cookies != null) {
+    			for (Cookie cookie : cookies) {
+    				if(cookie.getName().equals(appProperties.getLoginCookie())) {
+    					cookie.setMaxAge(0); // 0 to delete cookie
+    					response.addCookie(cookie);
+    				}
+    			}
+    		}
+    		model.put("user", new User());
+			return "appLogin";
+		} catch (Exception e) {
+			logger.error(e);
+			return "errorPage";
+		}
+    	
+    }
+    
 }
