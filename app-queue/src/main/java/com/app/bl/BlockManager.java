@@ -212,7 +212,8 @@ public class BlockManager {
 			
 		}
 		
-		else {
+		else if (header.getPrevHash() != null && !"".equals(header.getPrevHash()) && body.getAppID() != null &&
+				!"".equals(body.getAppID())) {
 			// APPi BLOCK
 			String username = block.getBody().getUserName();
 			String app = block.getBody().getAppID();
@@ -269,7 +270,45 @@ public class BlockManager {
 			}
 				
 				
-		} 
+		}
+		
+		else {
+			// LOGOUT BLOCK
+			// TODO
+			// retrieve user identification
+			String username = body.getUserName();
+			
+			if(username == null || "".equals(username)) {
+				String exception = "Block not valid";
+				throw new Exception(exception);
+			}
+			
+			String dataHash = header.getDataHash(); 
+			String calculatedDataHash = SecurityUtils.sha256Hash(username);
+			
+			// check if block is valid
+			if(!calculatedDataHash.equals(dataHash)) {
+				String exception = "Block not valid";
+				throw new Exception(exception);
+			}
+			
+			// retrieve UserBlockchain
+			BlockchainDTO userBlockchain = blockchainDAO.findById(username, receiver);
+			if(userBlockchain == null) {
+				return false;
+			}
+			
+			// add LogoutBlock to UserBlockchain
+			userBlockchain.getBlocks().add(block);
+			blockchainDAO.updateUserBlockchain(userBlockchain, receiver);
+			
+			// invalid UserBlockchain
+			blockchainDAO.invalidBlockchain(username, receiver);
+			
+			return true;
+			
+			
+		}
 		
 		return validBlock;
 	}
