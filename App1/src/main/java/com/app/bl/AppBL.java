@@ -392,10 +392,20 @@ public class AppBL {
 				nonceGenerator = new Random();
 			
 			HeaderDTO header = new HeaderDTO();
-			header.setPrevHash(null);
 			header.setDataHash(securityUtils.sha256Hash(user.getUsername()));
 			header.setTimeStamp(appUtils.convertDateToString(new Date(), appProperties.getDateFormatHour()));
 			header.setNonce(nonceGenerator.nextInt());
+			
+			// calculate prevHash
+			List<BlockDTO> blocks = userBlockchain.getBlocks();
+			BlockDTO lastBlock = blocks.get(blocks.size()-1);
+			HeaderDTO lastBlockHeader = lastBlock.getHeader();
+			String prevHash = securityUtils.sha256Hash(
+					lastBlockHeader.getDataHash().concat(
+							lastBlockHeader.getPrevHash()!=null?lastBlockHeader.getPrevHash():"")
+					.concat(String.valueOf(lastBlockHeader.getNonce()))
+					.concat(lastBlockHeader.getTimeStamp()));
+			header.setPrevHash(prevHash);
 
 			BodyDTO body = new BodyDTO();
 			body.setUserName(user.getUsername());
