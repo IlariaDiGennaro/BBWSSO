@@ -67,7 +67,9 @@ public class AppBL {
 
 			HeaderDTO header = new HeaderDTO();
 			header.setPrevHash(null);
-			header.setDataHash(securityUtils.sha256Hash(user.getUsername().concat(user.getPassword())));
+			// header.setDataHash(securityUtils.sha256Hash(user.getUsername().concat(user.getPassword())));
+			String hashedPassword = securityUtils.sha256Hash(user.getPassword());
+			header.setDataHash(securityUtils.sha256Hash(user.getUsername().concat(hashedPassword)));
 			header.setTimeStamp(appUtils.convertDateToString(new Date(), appProperties.getDateFormatHour()));
 			header.setNonce(nonceGenerator.nextInt());
 
